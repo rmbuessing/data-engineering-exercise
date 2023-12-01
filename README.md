@@ -9,59 +9,23 @@ Design a simplified version of a data pipeline using a real-world scenario. The 
 This pipeline will be generalized for production use at a later date as the company wishes to perform similar analysis in the future. The data to be extracted includes a list of authors and books related to your chosen subject.
 
 ## Key Deliverables
+
+   * Note: for the locally run files both the "requests" and "pandas" packages are needed via pip install  
+
 1. **Architecture Overview**:
-   - Briefly outline the architecture and the technologies or services you would use. As we use AWS, mention any relevant AWS services.
-   - Include a simple data model diagram.
+   For this scenario I chose an AWS influenced architecture that takes scalability into account. At a high level, I used a lambda function which could be triggered
+   by a variey of sources such as API Gateway, AWS SQS, AWS SNS, etc. to pull data from the Openlibrary API (I used space as my subject) which then splits the data into two different partitoned directories in AWS S3. One bucket was created for authors, another bucket was created for books, and both are partitioned by first publish year. Once the files are in S3, AWS Glue would crawl and catalog the data, which would then be queried using AWS Athena in order to perform aggregations and output those aggregations back into S3. I included an option to write the API data to RDS as well which could potentially be better for light data loads that require more complex querying.
+
+   Here is a link to my google drive which has a diagram of the data flow and architecture: https://drive.google.com/file/d/10d8YgfiLXsT__IseQcrWybgfZwG60pPg/view?usp=sharing
 
 2. **Python Script**:
-   - Write a Python script to pull data from the API.
-   - Focus on extracting relevant details for authors and books.
-   - You may mock the insertion into a database due to time constraints.
+   All relevant scripts can be found in the exercise_scripts directory. There you'll find four python scripts that contain the logic for the lambda function data extracts, one for S3 and another for RDS, as well as a script that can be run locally to see the output of the S3 lambda and finally a script for the pythonic version of the AWS Athena aggregation queries.
 
 3. **Sample Data Output**:
-   - Provide CSV outputs for 'Authors' and 'Books'.
-   - Include a simple 'Authors and Books' relation (no need for a full bridge table).
+   Sample data can be found in the authors and book directories which are partitioned by first publish year, the same way that they would appear in an S3 bucket.
 
 4. **Data Processing**:
-   - Write a SQL query (or Python equivalent) to aggregate:
-     - The number of books written each year by an author.
-     - The average number of books written by an author per year.
-   - Discuss how you would optimize this for a larger dataset.
+   The data aggregation queries can be found in the athena_queries.sql file and the pythonic version of these queries can be found in the data_aggregation.py file which can be run locally. There are two outputs, average_books_per_year.csv and books_per_year.csv
 
 5. **Presentation**:
-   - Prepare a short presentation explaining your approach, decisions made, and any assumptions.
-   - Discuss what you would do differently in a production environment and potential enhancements.
-
-6. **ReadMe & Documentation**:
-   - Include a brief ReadMe file explaining your approach.
-   - Document any setup instructions or prerequisites.
-
-## Duration:
-- This exercise is designed to be completed within a few hours. Focus on working code and explaining that code to the interviewers
-- Focus on demonstrating your thought process, ability to work with data, and how you would communicate your findings to product and analytics teams.
-
-**Evaluation Criteria**:
-- Clarity of thought and communication.
-- Practicality and relevance of the data pipeline design.
-- Coding style and data handling in Python.
-- Understanding of basic data aggregation and SQL queries.
-- Ability to think about scalability and production-readiness.
-
-**Optional Enhancements** (if time permits):
-- Include basic error handling or data validation in your script.
-- Discuss security considerations, especially in the context of AWS.
-- Briefly mention how you would incorporate infrastructure as code, like Terraform.
-
-**Note**:
-- It's okay to leave out certain aspects for time's sake. Prioritize the core components and be ready to discuss what you would add or change for a real-world scenario.
-- Your presentation and discussion will be a key part of the interview, allowing us to understand your approach and problem-solving skills.
-
-## Additional Info:
-* we expect that this will take you a few hours to complete
-* use any language or framework you are comfortable with, we prefer Python
-* AWS is our cloud provider please include mention of the services you would choose
-* Bonus points for including terraform or any other infrastructure as code
-* Bonus points for security, specs, tests etc.
-* Do as little or as much as you like.
-
-Please fork this repo and commit your code into that fork. Show your work and process through those commits.
+    Here is a link to my presentation which covers the architecture and tools approach as well as potential enhancements: https://docs.google.com/presentation/d/1vWKQeztxXW9Tqirya6d_3dq5jnCsVex0GLxtEWM7wAY/edit?usp=sharing
